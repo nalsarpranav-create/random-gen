@@ -332,6 +332,37 @@ def render_profile_tab() -> None:
             if st.button("🔄 Roll Again", use_container_width=True):
                 st.session_state.profile_result = generate_profile(profile)
                 st.rerun()
+
+            # Export options
+            st.markdown("##### Export")
+            result = st.session_state.profile_result
+
+            # Format as text
+            text_export = f"{result.profile_name}\n{'='*40}\n"
+            for attr in result.attributes:
+                text_export += f"{attr.name}: {attr.display()}\n"
+
+            # Format as JSON
+            import json
+            json_export = json.dumps(result.to_dict(), indent=2)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.download_button(
+                    "📄 Download Text",
+                    data=text_export,
+                    file_name=f"{result.profile_name.lower().replace(' ', '_')}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+            with col2:
+                st.download_button(
+                    "📋 Download JSON",
+                    data=json_export,
+                    file_name=f"{result.profile_name.lower().replace(' ', '_')}.json",
+                    mime="application/json",
+                    use_container_width=True
+                )
         else:
             st.markdown(
                 """
