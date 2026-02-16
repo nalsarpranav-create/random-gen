@@ -396,8 +396,9 @@ class CustomCurveGenerator(BaseGenerator):
         self._x_fine = np.linspace(0, 1, 500)
         self._pdf = np.maximum(interp(self._x_fine), 0.001)  # Ensure positive
 
-        # Normalize
-        self._pdf = self._pdf / np.trapz(self._pdf, self._x_fine)
+        # Normalize (numpy 2.0+ uses trapezoid, older uses trapz)
+        trapz_func = getattr(np, 'trapezoid', None) or np.trapz
+        self._pdf = self._pdf / trapz_func(self._pdf, self._x_fine)
 
         # Build CDF for inverse transform sampling
         self._cdf = np.zeros_like(self._x_fine)
