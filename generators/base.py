@@ -155,7 +155,9 @@ class BaseGenerator(ABC):
         y = np.array([self.get_probability_at(v) for v in x])
 
         # Normalize so area under curve is 1
-        total = np.trapz(y, x)
+        # Use trapezoid (numpy 2.0+) with fallback to trapz (older versions)
+        trapz_func = getattr(np, 'trapezoid', None) or np.trapz
+        total = trapz_func(y, x)
         if total > 0:
             y = y / total
 
